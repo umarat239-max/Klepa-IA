@@ -1,4 +1,10 @@
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 .env
 bot_database.db
+.venv/
+venv/
+.idea/
+.vscode/

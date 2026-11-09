@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: klepa-ia
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: BOT_TOKEN
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_ID
+        value: "1424001997"
+      - key: MODEL
+        value: openai/gpt-4o-mini
+      - key: FREE_LIMIT
+        value: "10"
+      - key: PREMIUM_PRICE
+        value: "50"

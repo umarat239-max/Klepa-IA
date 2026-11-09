@@ -23,8 +23,8 @@ from aiogram.types import (
 )
 
 # ---------- Настройки ----------
-BOT_TOKEN = os.getenv("BOT_TOKEN", "")
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+BOT_TOKEN = os.getenv("9022453036:AAE0cSh5f2jxDpu9UHBHguzeTG1lFVYxI30", "")
+OPENROUTER_API_KEY = os.getenv("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", "")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "1424001997"))
 MODEL = os.getenv("MODEL", "openai/gpt-4o-mini")
 PORT = int(os.getenv("PORT", "10000"))

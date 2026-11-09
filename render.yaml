@@ -12,7 +12,3 @@ services:
         sync: false
       - key: OPENROUTER_API_KEY
         sync: false
-      - key: ADMIN_ID
-        value: "1424001997"
-      - key: MODEL
-        value: openai/gpt-4o-mini

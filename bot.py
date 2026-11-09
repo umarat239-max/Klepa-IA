@@ -3,7 +3,7 @@ import logging
 import os
 import re
 import aiosqlite
-from aiohttp import ClientSession, ClientTimeout, web
+from aiohttp import web
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ChatAction
@@ -427,7 +427,8 @@ async def ask_ai(chat_id: int, user_text: str) -> str:
     payload = {"model": MODEL, "messages": msgs}
     headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json", "X-Title": BOT_NAME}
     
-    async with ClientSession(timeout=ClientTimeout(total=90)) as session:
+    import aiohttp
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=90)) as session:
         async with session.post("https://openrouter.ai/api/v1/chat/completions", json=payload, headers=headers) as resp:
             data = await resp.json()
             if resp.status != 200:
@@ -467,9 +468,18 @@ async def ai_chat(m: Message, bot: Bot):
 async def buy_prem_cb(call: CallbackQuery):
     await buy_premium(call.message)
 
-# ---------- Сервер для Render ----------
-async def health(_):
-    return web.Response(text=f"{BOT_NAME} running")
+# ---------- ВЕБ-СЕРВЕР ДЛЯ RENDER (ЧТОБЫ РАБОТАЛО НА БЕСПЛАТНОМ ТАРИФЕ) ----------
+async def handle_ping(request):
+    return web.Response(text=f"{BOT_NAME} is active and running!")
+
+async def start_web_server():
+    app = web.Application()
+    app.router.add_get("/", handle_ping)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", PORT)
+    await site.start()
+    log.info(f"Веб-сервер запущен на порту {PORT}")
 
 async def main():
     if not BOT_TOKEN or not OPENROUTER_API_KEY:
@@ -480,14 +490,11 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router)
 
-    app = web.Application()
-    app.router.add_get("/", health)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    await web.TCPSite(runner, "0.0.0.0", PORT).start()
+    # Запускаем локальный веб-сервер для Render в фоновом режиме
+    await start_web_server()
 
     await bot.delete_webhook(drop_pending_updates=True)
-    log.info("Бот запущен!")
+    log.info("Бот успешно запущен!")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
